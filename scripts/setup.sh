@@ -10,6 +10,8 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_DIR="$(dirname "$SCRIPT_DIR")"
 
 echo "[setup] Yocto workspace: $YOCTO_DIR"
+# CI runs as the 'yocto' user; layers/sstate may be created by other uids.
+git config --global --add safe.directory '*' 2>/dev/null || true
 mkdir -p "$YOCTO_DIR"
 cd "$YOCTO_DIR"
 

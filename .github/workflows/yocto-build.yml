@@ -1,12 +1,8 @@
 name: Yocto Build — Radxa Zero Fleet
 
 on:
-  push:
-    branches: [master]
-    paths:
-      - 'meta-ruview/**'
-      - 'conf/**'
-      - 'scripts/**'
+  # Manual only until the build is green (avoids auto-runs touching shared state).
+  # Re-enable push triggers once secrets + isolated workdir are confirmed.
   workflow_dispatch:
     inputs:
       target:
@@ -15,10 +11,12 @@ on:
 
 jobs:
   build:
-    runs-on: self-hosted        # requires a self-hosted runner registered on honeycomb
+    runs-on: self-hosted        # self-hosted runner on honeycomb
     timeout-minutes: 480
     env:
-      YOCTO_DIR: /opt/yocto/radxa-fleet
+      # ISOLATED CI workdir — never the live /opt/yocto/radxa-fleet manual-build tree.
+      # Shares sstate/downloads (set in conf/local.conf) for speed.
+      YOCTO_DIR: /opt/yocto/ci-radxa
       MANGO_WPA_PSK: ${{ secrets.MANGO_WPA_PSK }}   # set: gh secret set MANGO_WPA_PSK
 
     steps:

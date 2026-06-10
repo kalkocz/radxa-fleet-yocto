@@ -1,3 +1,32 @@
-build/tmp/
-build/cache/
-certs/signing.key.pem
+# Yocto build artifacts (never commit)
+build/
+downloads/
+sstate-cache/
+tmp/
+*.bz2
+*.wic
+*.ext4
+*.rootfs.*
+
+# Upstream layers — clone separately (see README), do not vendor
+poky/
+meta-oe/
+meta-openembedded/
+meta-meson/
+meta-rauc/
+meta-rauc-community/
+meta-virtualization/
+
+# Secrets — keys, real PSKs, password hashes (provide out-of-band)
+rauc-keys/
+certs/
+**/*.key.pem
+*.key
+u-boot-usb-combined.bin
+
+# Editor / OS cruft
+__pycache__/
+*.pyc
+*.bak
+*.bak-*
+.DS_Store

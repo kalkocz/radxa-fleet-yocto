@@ -1,0 +1,40 @@
+name: Yocto Build — Radxa Zero Fleet
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'meta-ruview/**'
+      - 'conf/**'
+      - 'scripts/**'
+  workflow_dispatch:
+    inputs:
+      target:
+        description: 'bitbake target'
+        default: 'core-image-minimal'
+
+jobs:
+  build:
+    runs-on: self-hosted        # requires a self-hosted runner registered on honeycomb
+    timeout-minutes: 480
+    env:
+      YOCTO_DIR: /opt/yocto/radxa-fleet
+      MANGO_WPA_PSK: ${{ secrets.MANGO_WPA_PSK }}   # set: gh secret set MANGO_WPA_PSK
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Yocto workspace
+        run: bash scripts/setup.sh
+
+      - name: Build image
+        run: bash scripts/build.sh "${{ github.event.inputs.target || 'core-image-minimal' }}"
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: radxa-fleet-image-${{ github.sha }}
+          path: |
+            ${{ env.YOCTO_DIR }}/build/tmp/deploy/images/radxa-zero/*.wic.bz2
+            ${{ env.YOCTO_DIR }}/build/tmp/deploy/images/radxa-zero/*.raucb
+          retention-days: 30
